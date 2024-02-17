@@ -1,6 +1,6 @@
 import json
 
-# Assuming `data` is your JSON loaded into a Python dictionary and you are looking to find a path to "id": "914" in it
+# Assuming `data` is your JSON loaded into a Python dictionary
 data = {
     "prizes": [
         # Your JSON structure. For example this:
@@ -227,24 +227,27 @@ data = {
     ]
 }
 
-def find_path(data, target_id, path=''):
+def find_path(data, search_key, target_value, path=''):
     if isinstance(data, dict):
         for k, v in data.items():
             new_path = f"{path}.{k}" if path else k
-            result = find_path(v, target_id, new_path)
+            # Check if this key has the target value we're looking for
+            if k == search_key and str(v) == str(target_value):
+                return path  # Return the path when the target value is found
+            result = find_path(v, search_key, target_value, new_path)
             if result: return result
     elif isinstance(data, list):
         for i, item in enumerate(data):
             new_path = f"{path}[{i}]"
-            result = find_path(item, target_id, new_path)
+            result = find_path(item, search_key, target_value, new_path)
             if result: return result
-    elif isinstance(data, str) and path.endswith('.id') and data == target_id:
-        return path.rstrip('.id')
     return None
-# we are looking for "id": "914"
-target_id = '914'
-path_to_target = find_path(data, target_id)
+
+# Example usage:
+search_key = 'year'  # The key you are searching for
+target_value = '2017'  # The value associated with the key you are searching for
+path_to_target = find_path(data, search_key, target_value)
 if path_to_target:
-    print(f"Path to id {target_id}: ${path_to_target}")
+    print(f"Path to {search_key} {target_value}: ${path_to_target}")
 else:
-    print(f"id {target_id} not found")
+    print(f"{search_key} {target_value} not found")
